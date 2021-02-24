@@ -1,28 +1,18 @@
 from flask import Blueprint, jsonify, request, render_template , flash, redirect
 from .models import DB, User, Tweet
-from .twitter import vectorize_tweet, predict_user
+from .airbnb_optimize import get_optimal_pricing
 from os import getenv
 from dotenv import load_dotenv
-import tweepy  # Allows us to interact with Twitter
 
 load_dotenv()
 
-TWITTER_API_KEY = getenv("TWITTER_API_KEY")
-TWITTER_API_KEY_SECRET = getenv("TWITTER_API_KEY_SECRET")
+airbnb_routes = Blueprint("airbnb_routes", __name__)
 
-TWITTER_AUTH = tweepy.OAuthHandler(TWITTER_API_KEY, TWITTER_API_KEY_SECRET)
-TWITTER = tweepy.API(TWITTER_AUTH)
-
-
-
-
-twitter_routes = Blueprint("twitter_routes", __name__)
-
-@twitter_routes.route('/')
+@airbnb_routes.route('/')
 def default_route():
     return render_template('layout2.html')
     
-@twitter_routes.route("/users")
+@airbnb_routes.route("/users")
 def list_users():
     # SELECT * FROM users
     users = User.query.all()
@@ -30,21 +20,21 @@ def list_users():
 
     return render_template("users2.html", message="Users and their 5 most recent tweets", users=users)
 
-@twitter_routes.route("/users/new")
+@airbnb_routes.route("/users/new")
 def new_user():
     return render_template("new_user.html")
 
-@twitter_routes.route("/users/create", methods=["POST"])
+@airbnb_routes.route("/users/create", methods=["POST"])
 def add_user():
 
     name=request.form['name']
-    twitter_user = TWITTER.get_user(name)
+    airbnb_user = TWITTER.get_user(name)
 
     #If the user doesn't already exist add to the user table
-    if user := User.query.get(twitter_user.id) is None:
+    if user := User.query.get(airbnb_user.id) is None:
         # create user based on the username passed into the function
         
-        user = User(name=name, id = twitter_user.id)
+        user = User(name=name, id = airbnb_user.id)
         DB.session.add(user)
         DB.session.commit()
         flash(f"User {user.name} created successfully!", "success")
@@ -52,12 +42,12 @@ def add_user():
     
     return update_tweets()#redirect(f"/users")
 
-@twitter_routes.route("/compare")
+@airbnb_routes.route("/compare")
 def compare_users():
     users = User.query.all()
     return render_template("predict.html", users=users)
 
-@twitter_routes.route("/predict", methods=["POST"])
+@airbnb_routes.route("/predict", methods=["POST"])
 def user_prediction():
 
     users = {}
@@ -76,7 +66,7 @@ def user_prediction():
     return render_template('prediction.html', tweet_text=tweet_text, user=users[predicted_user])
 
 
-@twitter_routes.route("/tweets/update", methods=["POST"])
+@airbnb_routes.route("/tweets/update", methods=["POST"])
 def update_tweets():
 
     for user in User.query.all():

@@ -1,18 +1,13 @@
 import os
 from flask import Flask
 from dotenv import load_dotenv
-from .models import DB, MIGRATE, User, Tweet
-from .routes2 import twitter_routes
+from .models import DB, User, Listing
+from .routes import airbnb_routes
 load_dotenv()
 
-DB_FILE = 'sqlite2.db' 
+DB_FILEPATH = os.path.join(os.path.dirname(__file__), 'db.sqlite3')
 
-DB_FILEPATH = os.path.join(os.path.dirname(__file__), DB_FILE)
-
-DB_URI = f'sqlite:////{DB_FILEPATH}' # using absolute filepath on Mac (recommended)
-
-print(DB_URI)
- 
+DB_URI = f'sqlite:////{DB_FILEPATH}' # using absolute filepath 
 
 def create_app():
     app = Flask(__name__)
@@ -23,9 +18,8 @@ def create_app():
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
     DB.init_app(app)
-    MIGRATE.init_app(app, DB)
 
-    app.register_blueprint(twitter_routes)    
+    app.register_blueprint(airbnb_routes)    
     return app
 
 APP = create_app()
