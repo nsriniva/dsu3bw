@@ -4,7 +4,7 @@ DB = SQLAlchemy()
 
 class User(DB.Model):  # User Table
     """Twitter Users corresponding to Tweets"""
-    id = DB.Column(DB.BigInteger, primary_key=True)  # id column
+    id = DB.Column(DB.Integer, primary_key=True)  # id column
     name = DB.Column(DB.String, nullable=False)  # name column
     
     def __repr__(self):
@@ -28,3 +28,15 @@ class Listing(DB.Model):
 
     def __repr__(self):
         return f'<Listing: {self.name}:{self.property_type}:{self.room_type}:{self.min_nights}:{self.location}:{self.user.name}>'
+
+
+def init_db(app):
+    with app.app_context():
+        try:
+            print(User.query.all())
+        except Exception as e:
+            print(e)
+            print('Creating DB tables')
+            DB.create_all()
+            print(DB.__dir__())
+        

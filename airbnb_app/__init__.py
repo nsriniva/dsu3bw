@@ -1,8 +1,10 @@
 import os
 from flask import Flask
 from dotenv import load_dotenv
-from .models import DB, User, Listing
+
+from .models import DB, init_db
 from .routes import airbnb_routes
+
 load_dotenv()
 
 DB_FILEPATH = os.path.join(os.path.dirname(__file__), 'db.sqlite3')
@@ -16,19 +18,14 @@ def create_app():
 
     app.config["SQLALCHEMY_DATABASE_URI"] = DB_URI
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
     DB.init_app(app)
-
-    try:
-        print(User.__table__.exists())
-    except Exception:
-        DB.create_all()
-
+    
     app.register_blueprint(airbnb_routes)    
     return app
 
 APP = create_app()
-
+init_db(APP)
+        
 if __name__ == "__main__":
 
     my_app = create_app()

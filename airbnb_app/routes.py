@@ -26,14 +26,17 @@ def add_user():
 
 @airbnb_routes.route("/users/create", methods=["POST"])
 def create_user():
+    
+    users = User.query.all()
 
     name=request.form['name']
-
+    
     #If the user doesn't already exist add to the user table
-    if user := User.query.filter(User.name == name) is None:
+    print(User.query.filter(User.name == name).first())
+    if user := User.query.filter(User.name == name).first() is None:
         # create user based on the username passed into the function
         
-        user = User(name=name)
+        user = User(id=len(users)+1, name=name)
         DB.session.add(user)
         DB.session.commit()
         flash(f"User {user.name} created successfully!", "success")
