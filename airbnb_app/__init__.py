@@ -19,6 +19,11 @@ def create_app():
 
     DB.init_app(app)
 
+    try:
+        print(User.__table__.exists())
+    except Exception:
+        DB.create_all()
+
     app.register_blueprint(airbnb_routes)    
     return app
 

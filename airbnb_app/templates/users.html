@@ -1,6 +1,6 @@
 <!-- templates/users.html -->
 
-{% extends "layout2.html" %} {% block title %}
+{% extends "airbnb_op_layout.html" %} {% block title %}
 <title>Users Page</title>
 {% endblock %} {% block content %}
 
@@ -13,8 +13,8 @@
     {% for user in users %}
     <li>{{ user['name'] }}
         <ul>
-            {% for tweet in (user['tweets']|sort(reverse=true,attribute='id'))[:5] %}
-            <li>{{ tweet['text'] }}</li>
+            {% for listing in (user['listings']|sort(reverse=true,attribute='id'))[:5] %}
+            <li>{{ listing['name'] }}</li>
             {% endfor %}
         </ul>
     </li>
@@ -25,8 +25,8 @@
 <p>Users not found.</p>
 {% endif %}
 
-<form action="/tweets/update" method="POST">
-    <button>Update Tweets</button>
+<form action="/listings/update" method="POST">
+    <button>Update Listings</button>
 </form>
 
 {% endblock %}

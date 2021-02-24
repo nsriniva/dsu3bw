@@ -1,7 +1,4 @@
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
-
-MIGRATE = Migrate()
 
 DB = SQLAlchemy()
 
@@ -9,22 +6,25 @@ class User(DB.Model):  # User Table
     """Twitter Users corresponding to Tweets"""
     id = DB.Column(DB.BigInteger, primary_key=True)  # id column
     name = DB.Column(DB.String, nullable=False)  # name column
-    # keeps track of newest user tweet
-    newest_tweet_id = DB.Column(DB.BigInteger)
-
+    
     def __repr__(self):
         return f'<User: {self.name}:{self.id}>'
 
 
-class Tweet(DB.Model):
-    """Tweets corresponding to Users"""
+class Listing(DB.Model):
+    """Listings corresponding to Users"""
     id = DB.Column(DB.BigInteger, primary_key=True)  # id column
-    text = DB.Column(DB.Unicode(300))  # tweet text column - allows for emojis
-    vect = DB.Column(DB.PickleType, nullable=False)  # vectorized tweet
-    user_id = DB.Column(DB.BigInteger, DB.ForeignKey(
-        "user.id"), nullable=False)  # user_id column (corresponding user)
+    name = DB.Column(DB.String, nullable=False)
+    property_type = DB.Column(DB.String, nullable=False)
+    room_type =  DB.Column(DB.String, nullable=False)
+    min_nights = DB.Column(DB.Integer, nullable=False)
+    location = DB.Column(DB.String, nullable=False)
+    price = DB.Column(DB.Float, nullable=False)
+    user_id = DB.Column(DB.BigInteger, 
+                        DB.ForeignKey("user.id"), 
+                        nullable=False)  # user_id column (corresponding user)
     user = DB.relationship("User",
-                           backref=DB.backref("tweets", lazy=True))  # creates user link between tweets
+                           backref=DB.backref("listings", lazy=True))  # creates user link between listings
 
     def __repr__(self):
-        return f'<Tweet: {self.text}>'
+        return f'<Listing: {self.name}:{self.property_type}:{self.room_type}:{self.min_nights}:{self.location}:{self.user.name}>'
