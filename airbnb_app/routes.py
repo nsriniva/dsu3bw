@@ -44,41 +44,64 @@ def create_user():
     
     return redirect(f"/users")
 
-@airbnb_routes.route("/listings/add")
+@airbnb_routes.route("/listings/add", methods=["POST"])
 def add_listing():
-    return render_template("add_listing.html")
+    print(request.form)
+    user_id = request.form['user']
+    user = User.query.get(user_id)
+    return render_template("add_listing.html", user=user)
 
 @airbnb_routes.route("/listings/create", methods=["POST"])
 def create_listings():
 
-    listing = Listing(**request.form)
+    new_id = len(Listing.query.all()) + 1
+
+    print(request.form)
+    listing = Listing(id=new_id, **request.form, price=get_optimal_pricing(**request.form))
     
     DB.session.add(listing)
     DB.session.commit()
-    flash(f"Listing {listings.name} created successfully!", "success")
+    flash(f"Listing {listing.name} created successfully!", "success")
 
     
     return redirect(f"/users")
 
-@airbnb_routes.route("/listings/edit")
+@airbnb_routes.route("/listings/edit", methods=["POST"])
 def edit_listing():
-    return render_template("edit_listing.html")
+    listing_id = request.form['listing']
+    print(f'{listing_id=}')
+    
+    listing = Listing.query.get(listing_id)
+    print(listing)
+    return render_template("edit_listing.html", listing=listing)
 
 @airbnb_routes.route("/listings/modify", methods=["POST"])
 def modify_listings():
-
-    listing = Listing(**request.form)
     
-    DB.session.add(listing)
+    print(request.form)
+
+    listing = Listing.query.get(request.form['id'])
+    
+    print(listing)
+    
+    for attr in request.form:
+        setattr(listing, attr, request.form[attr]) 
+    
+    listing.price = get_optimal_pricing(**request.form)
+    
+    print(listing)
+    
+    
     DB.session.commit()
-    flash(f"Listing {listings.name} created successfully!", "success")
+    flash(f"Listing {listing.name} edited successfully!", "success")
 
     
     return redirect(f"/users")
 
 @airbnb_routes.route("/listings/delete", methods=["POST"])
 def delete_listings():
-    
+    Listing.query.filter_by(id=request.form['listing']).delete()
+    DB.session.commit()
     return redirect(f"/users")
 
 

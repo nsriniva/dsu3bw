@@ -20,7 +20,7 @@ class Listing(DB.Model):
     min_nights = DB.Column(DB.Integer, nullable=False)
     location = DB.Column(DB.String, nullable=False)
     price = DB.Column(DB.Float, nullable=False)
-    user_id = DB.Column(DB.BigInteger, 
+    user_id = DB.Column(DB.Integer, 
                         DB.ForeignKey("user.id"), 
                         nullable=False)  # user_id column (corresponding user)
     user = DB.relationship("User",

@@ -12,11 +12,28 @@
 <ol>
     {% for user in users %}
     <li>{{ user['name'] }}
-        <ul>
+        <ol>
             {% for listing in (user['listings']|sort(reverse=true,attribute='id'))[:5] %}
-            <li>{{ listing['name'] }}</li>
+            <li>{{ listing['name'] }}
+                <ul>
+                    <li>{{ listing['location'] }}</li>
+                    <li>{{ listing['property_type'] }}</li>
+                    <li>{{ listing['room_type'] }}</li>
+                    <li>{{ listing['min_nights'] }}</li>
+                    <li>{{ listing['price'] }}</li>
+                </ul>
+                <form action="/listings/edit" method="POST">
+                    <button name="listing" value={{ listing[ 'id'] }}>Edit Listing</button>
+                </form>
+                <form action="/listings/delete" method="POST">
+                    <button name="listing" value={{ listing[ 'id'] }}>Delete Listing</button>
+                </form>
+            </li>
             {% endfor %}
-        </ul>
+        </ol>
+        <form action="/listings/add" method="POST">
+            <button name="user" value={{ user[ 'id']}}>Add Listing</button>
+        </form>
     </li>
     {% endfor %}
 </ol>
