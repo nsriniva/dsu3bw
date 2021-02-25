@@ -4,7 +4,7 @@ DB = SQLAlchemy()
 
 class User(DB.Model):  # User Table
     """Twitter Users corresponding to Tweets"""
-    id = DB.Column(DB.Integer, primary_key=True)  # id column
+    id = DB.Column(DB.BigInteger, primary_key=True)  # id column
     name = DB.Column(DB.String, nullable=False)  # name column
     
     def __repr__(self):
@@ -20,7 +20,7 @@ class Listing(DB.Model):
     min_nights = DB.Column(DB.Integer, nullable=False)
     location = DB.Column(DB.String, nullable=False)
     price = DB.Column(DB.Float, nullable=False)
-    user_id = DB.Column(DB.Integer, 
+    user_id = DB.Column(DB.BigInteger, 
                         DB.ForeignKey("user.id"), 
                         nullable=False)  # user_id column (corresponding user)
     user = DB.relationship("User",
@@ -38,5 +38,4 @@ def init_db(app):
             print(e)
             print('Creating DB tables')
             DB.create_all()
-            print(DB.__dir__())
         

@@ -104,8 +104,24 @@ def delete_listings():
     DB.session.commit()
     return redirect(f"/users")
 
+def get_dict_from_listing(listing):
+    attrs = ['location', 'room_type', 'name', 'id', 'price', 'min_nights', 'property_type', 'user_id']
+    
+    ret = {}
+    
+    for attr in attrs:
+        ret[attr] = getattr(listing, attr)
+        
+    return ret
 
 @airbnb_routes.route("/listings/update", methods=["POST"])
 def update_listings():
+    
+    listings = Listing.query.all()
+    
+    for listing in listings:
+        listing.price = get_optimal_pricing(**get_dict_from_listing(listing))
+        
+    DB.session.commit()
     
     return redirect(f"/users")
